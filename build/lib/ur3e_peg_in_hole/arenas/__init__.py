@@ -1,0 +1,2 @@
+from manipulator_mujoco.arenas.standard import StandardArena
+from ur3e_peg_in_hole.arenas.peg_in_hole_arena import PegInHoleArena
