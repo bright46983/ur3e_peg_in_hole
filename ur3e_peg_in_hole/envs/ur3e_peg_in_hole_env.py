@@ -76,6 +76,7 @@ class UR3ePegInHoleEnv(gym.Env):
 
         # Camera 
         self._camera = Camera([400,400],self._physics.model.ptr,self._physics.data.ptr, "fixed_camera")
+        self._hand_camera = Camera([400,400],self._physics.model.ptr,self._physics.data.ptr, "ur3e/hand_camera")
 
         # set up OSC controller
         self._controller = OperationalSpaceController(
@@ -232,7 +233,8 @@ class UR3ePegInHoleEnv(gym.Env):
             if self.show_cam and self.i%10 == 0:
                 print("render cam")
                 # print(self._camera.image)
-                cv2.imshow("img",cv2.cvtColor(self._camera.image, cv2.COLOR_RGB2BGR) )
+                cv2.imshow("fixed_camera",cv2.cvtColor(self._camera.image, cv2.COLOR_RGB2BGR) )
+                cv2.imshow("hand_camera",cv2.cvtColor(self._hand_camera.image, cv2.COLOR_RGB2BGR) )
                 cv2.waitKey(1)
                 # self._camera.shoot()
 

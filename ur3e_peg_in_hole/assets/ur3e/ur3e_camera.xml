@@ -121,9 +121,7 @@
                     <site name="eef_site" pos="0 0 0.05" quat="0 0.7071068 -0.7071068 0"/>
                   </body>
 
-                  <body name="camera_link" pos="0.1 0.05 0" quat=" 0.430  0.561 -0.430  0.561">
-                    <camera name="hand_camera"  mode="fixed" fovy="42.5" />
-                  </body>
+                  
 
                 </body>
               </body>
