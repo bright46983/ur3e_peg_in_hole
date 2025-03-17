@@ -1,0 +1,3 @@
+Mon Mar 17 18:39:19 2025
+ERROR: Auxiliary framebuffer resolve is not complete, error 0x8cd6
+

@@ -11,6 +11,8 @@ from ur3e_peg_in_hole.arenas import PegInHoleArena
 from ur3e_peg_in_hole.robots import RT2F85
 from manipulator_mujoco.mocaps import Target
 from manipulator_mujoco.controllers import OperationalSpaceController
+from ur3e_peg_in_hole.robots import Camera
+import cv2
 
 class UR3ePegInHoleEnv(gym.Env):
 
@@ -32,7 +34,7 @@ class UR3ePegInHoleEnv(gym.Env):
 
         assert render_mode is None or render_mode in self.metadata["render_modes"]
         self._render_mode = render_mode
-
+        self.show_cam = True
         ############################
         # create MJCF model
         ############################
@@ -67,8 +69,13 @@ class UR3ePegInHoleEnv(gym.Env):
         self._peg = self._arena.mjcf_model.find('joint', "peg_freejoint")
         self._hole = self._arena.mjcf_model.find('body', "hole")
        
+        
+
         # generate model
         self._physics = mjcf.Physics.from_mjcf_model(self._arena.mjcf_model)
+
+        # Camera 
+        self._camera = Camera([400,400],self._physics.model.ptr,self._physics.data.ptr, "fixed_camera")
 
         # set up OSC controller
         self._controller = OperationalSpaceController(
@@ -105,6 +112,7 @@ class UR3ePegInHoleEnv(gym.Env):
         # reset physics
         with self._physics.reset_context():
             for i in range(500): # give a couple of time to finish reset (~500-2000 steps)
+                self.i = self.i +1
                 # put arm in a reasonable starting position
                 self._physics.bind(self._arm.joints).qpos = [
                     -1.5707,
@@ -153,9 +161,9 @@ class UR3ePegInHoleEnv(gym.Env):
         terminated = False
 
         # peg in hole testing logic
-        if self.i < 500:
+        if self.i < 1500:
             pass
-        elif self.i < 1500:
+        elif self.i < 2500:
             hole_pos = self._physics.bind(self._hole).xpos.copy()
             hole_pos[2] = hole_pos[2] + 0.25
             self._target.set_mocap_pose(self._physics, position=hole_pos[:3], quaternion=[0, 0, 0, 1])
@@ -205,6 +213,14 @@ class UR3ePegInHoleEnv(gym.Env):
                 self._physics.model.ptr,
                 self._physics.data.ptr,
             )
+            self._viewer.cam.distance = 1.6
+            self._viewer.cam.azimuth = -150
+            self._viewer.cam.elevation = -45
+            self._viewer.cam.lookat[:] = np.array([0.0, 0.0, 0.824])
+            #start rendering camera
+            # self._camera._renderer.render()
+            
+
         if self._step_start is None and self._render_mode == "human":
             # initialize step timer
             self._step_start = time.time()
@@ -212,6 +228,13 @@ class UR3ePegInHoleEnv(gym.Env):
         if self._render_mode == "human":
             # render viewer
             self._viewer.sync()
+            # render camera
+            if self.show_cam and self.i%10 == 0:
+                print("render cam")
+                # print(self._camera.image)
+                cv2.imshow("img",cv2.cvtColor(self._camera.image, cv2.COLOR_RGB2BGR) )
+                cv2.waitKey(1)
+                # self._camera.shoot()
 
             # TODO come up with a better frame rate keeping strategy
             time_until_next_step = self._timestep - (time.time() - self._step_start)

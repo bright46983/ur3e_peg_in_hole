@@ -6,6 +6,7 @@
     <flag  multiccd="disable" warmstart="enable"/>
   </option>
   <visual>
+    <!-- <global fovy="60" azimuth="45" elevation="-100"/> -->
     <quality shadowsize="8192" />
   </visual>
   <compiler angle="radian"/>
@@ -84,6 +85,14 @@
       <geom type="cylinder" size="0.024 0.05" pos="0 0 0" class="collision"  material="None"/>
     </body>
 
+    <body name="camera_center" euler="0  0.0  0" pos="0.3 0.0 1.1">
+        </body>
+
+
+    <body name="fixed_camera_body" euler="0  0.0  0" pos="0.65 0.1 2.3">
+      <camera name="fixed_camera"  mode="targetbody" target="camera_center" fovy="42.5" />
+    </body>
+		  
     
  
   </worldbody>
